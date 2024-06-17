@@ -9,14 +9,14 @@ async function handleIncomingSms(req, res) {
     await addUser(userPhoneNumber);
     await sendSms(userPhoneNumber, 'Welcome to AI Trivia Game! Reply with START to begin.');
   } else if (userMessage === 'start') {
-    await sendSms(userPhoneNumber, 'Call this number to start the game: [Your Twilio Phone Number]');
+    await sendSms(userPhoneNumber, `Call +${process.env.TWILIO_PHONE_NUMBER} to start playing!`);
 } else if (userMessage === 'leaderboard') {
     const user = await getUser(userPhoneNumber);
     if (!user) {
       await sendSms(userPhoneNumber, 'You are not registered. Reply with JOIN to register.');
       return res.sendStatus(200);
     }
-    
+
     const leaderboard = await getLeaderboard();
     const userRank = leaderboard.findIndex(u => u.phoneNumber === userPhoneNumber) + 1;
     const userScore = user.score;

@@ -2,6 +2,8 @@
 
 SmartyCall is an interactive trivia game that uses Node.js, Couchbase, Twilio Voice and SMS APIs, and the OpenAI API to deliver trivia questions to players via phone calls and SMS. Players can register via SMS, receive trivia questions through phone calls, and get their scores tracked in real-time.
 
+This application was built for the [Twilio Hackathon Challenge on devto](https://dev.to/devteam/join-us-for-the-twilio-challenge-5000-in-prizes-4fdi).
+
 ## Features
 
 - User registration via SMS
@@ -14,9 +16,9 @@ SmartyCall is an interactive trivia game that uses Node.js, Couchbase, Twilio Vo
 
 - Node.js
 - Express.js
-- Couchbase
-- Twilio Voice and SMS APIs
-- OpenAI API
+- [Couchbase](https://cloud.couchbase.com/)
+- [Twilio Voice and SMS APIs](https://www.twilio.com/)
+- [OpenAI API](https://www.openai.com/)
 
 ## Prerequisites
 
@@ -75,7 +77,7 @@ SmartyCall is an interactive trivia game that uses Node.js, Couchbase, Twilio Vo
 
 ### Start the Game
 
-1. **Text "START" to your Twilio phone number:**
+1. **Text "JOIN" to your Twilio phone number:**
    You will receive a message with the phone number to call to start the game.
 2. **Call the provided number:**
    You will receive a welcome message followed by a trivia question.
