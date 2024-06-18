@@ -9,10 +9,15 @@ async function createChatCompletion(messages) {
 }
 
 async function generateTriviaQuestion() {
-    const response = await createChatCompletion([
-        {"role": "system", "content": "You are an assistant tasked with creating trivia questions. Each trivia item should consist of a question followed by an answer separated by a line that says 'Answer:'."},
-        {"role": "system", "content": "Create a trivia question and provide the answer."}
-    ]);
+    let response;
+    try {
+        const response = await createChatCompletion([
+            {"role": "system", "content": "You are an assistant tasked with creating trivia questions. Each trivia item should consist of a question followed by an answer separated by a line that says 'Answer:'."},
+            {"role": "system", "content": "Create a trivia question and provide the answer."}
+        ]);
+    } catch (error) {
+        throw new Error(`Failed to retrieve question: ${error.message}`);
+    }
 
     if (!response.data || !response.data.choices || !response.data.choices.length || !response.data.choices[0].text) {
         throw new Error('Invalid response structure from OpenAI API');
@@ -20,7 +25,7 @@ async function generateTriviaQuestion() {
 
     const parts = response.data.choices[0].text.trim().split('\nAnswer: ');
     if (parts.length < 2) {
-        throw new Error('Failed to parse the question and answer');
+        throw new Error(`Failed to parse the question and answer from response: ${response.data.choices[0].text}`);
     }
 
     const question = parts[0].trim();
@@ -39,7 +44,7 @@ async function evaluateAnswer(userAnswer, correctAnswer) {
             {"role": "system", "content": "Is the user's answer correct? Respond with 'correct' or 'incorrect' only."}
         ]);
     } catch (error) {
-        throw new Error('Failed to evaluate the answer: ' + error.message);
+        throw new Error(`Failed to evaluate the answer: ${error.message}`);
     }
 
     return response.data.choices[0].text.trim().toLowerCase() === 'correct';
