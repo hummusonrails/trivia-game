@@ -1,4 +1,4 @@
-const { addUser } = require('../services/couchbaseService');
+const { addUser, getUser, getLeaderboard } = require('../services/couchbaseService');
 const { sendSms } = require('../services/twilioService');
 
 async function handleIncomingSms(req, res) {

@@ -3,37 +3,72 @@ const { generateTriviaQuestion, evaluateAnswer } = require('../services/openaiSe
 const { updateScore, getUser } = require('../services/couchbaseService');
 
 async function handleIncomingCall(req, res) {
-  const twiml = new VoiceResponse();
-  const question = await generateTriviaQuestion();
+    const { question, answer } = await generateTriviaQuestion();
 
-  twiml.say('Welcome to AI Trivia Game!');
-  twiml.say(question);
+    req.session.question = question;
+    req.session.answer = answer;
 
-  twiml.gather({
-    input: 'speech',
-    timeout: 5,
-    action: '/voice/answer',
-    method: 'POST',
-  });
+    const twiml = new VoiceResponse();
+    twiml.say({
+        voice: 'Polly.Justin',
+        language: 'en-GB'
+    },
+        'Welcome to the AI Trivia Game! Communications brought to you by Twilio, questions from Chat GPT and data is powered by Couchbase.'
+    );
 
-  res.type('text/xml');
-  res.send(twiml.toString());
+    twiml.say({
+        voice: 'Polly.Nicole',
+        language: 'en-AU'
+    },
+        question
+    );
+
+    const gather = twiml.gather({
+        action: '/voice/answer',
+        method: 'POST',
+        input: 'dtmf speech',
+        finishOnKey: '#'
+    });
+
+    gather.say({
+        voice: 'Polly.Justin',
+        language: 'en-GB'
+    },
+        'Please say your answer and press the pound key when you are done.'
+    );
+
+    twiml.say({
+        voice: 'Polly.Emma',
+        language: 'en-GB'
+    },
+        'Please respond to the question.'
+    );
+
+    res.type('text/xml');
+    res.send(twiml.toString());
 }
 
 async function handleAnswer(req, res) {
-  const twiml = new VoiceResponse();
-  const userAnswer = req.body.SpeechResult;
-  const isCorrect = await evaluateAnswer(userAnswer);
+    const twiml = new VoiceResponse();
 
-  if (isCorrect) {
-    twiml.say('Correct! You earned a point.');
-    await updateScore(req.body.From, 1);
-  } else {
-    twiml.say('Incorrect. Better luck next time.');
-  }
+    const phoneNumber = req.body.From;
+    const userResponse = req.body.SpeechResult || req.body.Digits;
+    
+    if (userResponse) {
+        const isCorrect = await evaluateAnswer(userResponse, req.session.answer);
+        if (isCorrect) {
+            twiml.say('Your answer is correct. Congratulations!');
+            await updateScore(phoneNumber, 1);
+        } else {
+            twiml.say('That is incorrect. Try another question.');
+        }
+    } else {
+        twiml.say('No answer detected, please try again.');
+        twiml.redirect('/voice');
+    }
 
-  res.type('text/xml');
-  res.send(twiml.toString());
+    res.type('text/xml');
+    res.send(twiml.toString());
 }
 
 module.exports = { handleIncomingCall, handleAnswer };

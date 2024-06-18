@@ -19,4 +19,22 @@ async function connectToCouchbase() {
   return { cluster, bucket, defaultCollection };
 }
 
-module.exports = connectToCouchbase;
+async function connectToCouchbaseForAnswers() {
+    const clusterConnStr = process.env.COUCHBASE_URL;
+    const username = process.env.COUCHBASE_USER;
+    const password = process.env.COUCHBASE_PASSWORD;
+    const bucketName = process.env.COUCHBASE_BUCKET_QUESTIONS;
+  
+    const cluster = await couchbase.connect(clusterConnStr, {
+      username: username,
+      password: password,
+      configProfile: 'wanDevelopment',
+    });
+
+    const bucket = cluster.bucket(bucketName);
+    const defaultCollection = bucket.defaultCollection();
+  
+    return { cluster, bucket, defaultCollection };
+  }
+
+module.exports = connectToCouchbase, connectToCouchbaseForAnswers;

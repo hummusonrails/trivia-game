@@ -8,6 +8,7 @@ This application was built for the [Twilio Hackathon Challenge on devto](https:/
 
 - User registration via SMS
 - AI-generated trivia questions using OpenAI API
+- Cached trivia questions in Couchbase
 - Interactive voice-based gameplay with Twilio Voice
 - Score tracking and leaderboard via Couchbase
 - Delivery status tracking for SMS messages
@@ -49,10 +50,12 @@ This application was built for the [Twilio Hackathon Challenge on devto](https:/
    COUCHBASE_USER=your-couchbase-username
    COUCHBASE_PASSWORD=your-couchbase-password
    COUCHBASE_BUCKET=your-couchbase-bucket-name
+   COUCHBASE_BUCKET_QUESTIONS=your-couchbase-bucket-questions-name
    TWILIO_ACCOUNT_SID=your-twilio-account-sid
    TWILIO_AUTH_TOKEN=your-twilio-auth-token
    TWILIO_PHONE_NUMBER=your-twilio-phone-number
    OPENAI_API_KEY=your-openai-api-key
+   SESSION_SECRET=your-session-secret
    ```
 
 4. **Run the application:**
@@ -80,7 +83,7 @@ This application was built for the [Twilio Hackathon Challenge on devto](https:/
 1. **Text "JOIN" to your Twilio phone number:**
    You will receive a message with the phone number to call to start the game.
 2. **Call the provided number:**
-   You will receive a welcome message followed by a trivia question.
+   You will receive a welcome message followed by a trivia question. Each unique question is cached in Couchbase to avoid repeating the same question.
 3. **Answer the trivia question:**
    Respond via voice, and you will receive feedback on whether your answer was correct. Your score will be tracked.
 
